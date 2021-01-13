@@ -154,6 +154,8 @@
 
                     if (this.scoreTeam1 - this.currentScore < 0) {
                         alert("Vous avez dépassé !")
+                    } else if (this.currentScore > 180) {
+                        alert("Score max : 180 !")
                     } else {
                         let oldCpt = this.cptTeam1
                         this.cptTeam1 = (this.cptTeam1 + 1) % (this.equipes[0].length)
@@ -175,6 +177,8 @@
 
                     if (this.scoreTeam2 - this.currentScore < 0) {
                         alert("Vous avez dépassé !")
+                    } else if (this.currentScore > 180) {
+                        alert("Score max : 180 !")
                     } else {
                         let oldCpt = this.cptTeam2
                         this.cptTeam2 = (this.cptTeam2 + 1) % (this.equipes[1].length)

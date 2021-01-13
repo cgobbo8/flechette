@@ -1,36 +1,24 @@
 <template>
-    <div :class="{winner : win}" class="card">
-        <div class="card-header">
-            <h1 class="stat-title"> {{ name }} </h1>
-            <div class="score-container">
-                <h3>Score</h3>
-            <h2> {{score}} </h2>
+    <div :class="{nonactive : !active}" class="card">
+        <div :class="{nonactive : !active}" class="card-header">
+            <h1 :class="{nonactive : !active}" class="stat-title"> {{ name }} </h1>
+            <div :class="{nonactive : !active}" class="score-container">
+                <h3 :class="{nonactive : !active}">Score</h3>
+                <h2 :class="{nonactive : !active}"> {{score}} </h2>
             </div>
         </div>
-        <input @keypress.enter="play" type="number" class="input-fight" name="score" v-model="scoreInput"
-            placeholder="Score" id="">
-        <button class="primaire large" :disabled="isNaN(parseInt(scoreInput))" @click="play">Ajouter score</button>
+        <input :disabled="!active" :class="{nonactive : !active}" @keypress.enter="play" type="number"
+            class="input-fight" name="score" v-model="scoreInput" placeholder="Score" id="">
+        <button :class="{nonactive : !active}" class="primaire large" :disabled="isNaN(parseInt(scoreInput))"
+            @click="play">Ajouter score</button>
 
-        <h2 class="stat-title">Statistiques</h2>
-        <p>Moyenne : <span v-if="historique.length > 0">{{moyenne}}</span> </p>
-        <p>Scores : <span v-for="(score,i) in historique" :key="i"> {{score}} <span
+        <h2 :class="{nonactive : !active}" class="stat-title">Statistiques</h2>
+        <p :class="{nonactive : !active}">Moyenne : <span v-if="historique.length > 0">{{moyenne}}</span> </p>
+        <p :class="{nonactive : !active}">Scores : <span v-for="(score,i) in historique" :key="i"> {{score}} <span
                     v-if="i != historique.length - 1">|</span> </span></p>
-        <p>Coups joués : {{historique.length}} </p>
+        <p :class="{nonactive : !active}">Coups joués : {{historique.length}} </p>
 
-                <modal name="example">
-            <div class="modal">
-                <h1>Bravo ! </h1>
-                <br>
-                <h3>{{ name }} gagné !</h3>
-                <br>
-                <div class="modal-buttons">
-                    <button class="primaire" @click="recommencer">Recommencer</button>
-                    <button class="secondaire" @click="toHome">Retour au menu</button>
-                </div>
 
-            </div>
-
-        </modal>
     </div>
 
 </template>
@@ -48,42 +36,50 @@
     })
 
     export default {
-        props: ["name", "active"],
+        props: ["name"],
         data() {
             return {
                 score: 501,
                 scoreInput: "",
                 historique: [],
                 moyenne: 0,
-                win: false
+                win: false,
+                active: false
             }
         },
         methods: {
             play() {
-                if (this.score - this.scoreInput < 0) {
-                    alert("Le score final doit être de 0 !")
-                } else {
-                    if (!isNaN(this.scoreInput)) {
-                        this.score -= this.scoreInput
-                        this.historique.push(parseInt(this.scoreInput))
-                        this.moyenne = Math.round((this.historique.reduce((a, b) => a + b, 0)) / this.historique.length)
-                        this.scoreInput = ""
+                if (!isNaN(parseInt(this.scoreInput))) {
+                    if (this.score - this.scoreInput < 0) {
+                        alert("Le score final doit être de 0 !")
+                    } else if (parseInt(this.scoreInput) > 180) {
+                        alert("Score max 180 !")
+                    }
+                    else {
+                        this.$parent.next()
+                        if (!isNaN(this.scoreInput)) {
+                            this.score -= this.scoreInput
+                            this.historique.push(parseInt(this.scoreInput))
+                            this.moyenne = Math.round((this.historique.reduce((a, b) => a + b, 0)) / this.historique
+                                .length)
+                            this.scoreInput = ""
+                        }
+
                     }
 
+                    if (this.score == 0) {
+                        this.$parent.win(this.name)
+
+                    }
                 }
 
-                if (this.score == 0) {
-                    this.win = true
-                    this.$confetti.start();
-                    this.$modal.show('example')
-                }
 
             },
-            toHome() {
-                this.$modal.hide()
-                this.$confetti.stop()
-                this.$router.push("/")
-            }
+
+            reset() {
+                this.score = 501
+            },
+
         }
     }
 </script>
@@ -122,5 +118,9 @@
         justify-content: center;
         align-items: center;
         flex-direction: column;
+    }
+
+    .nonactive {
+        opacity: .7;
     }
 </style>

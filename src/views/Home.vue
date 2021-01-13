@@ -1,35 +1,39 @@
 <template>
   <div id="app">
     <div class="main-container">
-<div class="main-container-home">
-    <div class="container-home">
-      <div class="container-inputs">
-        <h2>Entrez les joueurs</h2>
-        <form class="form-home" ref="test" @submit.prevent="savePlayers">
-          <div class="inputs-home">
-          <div v-for="(input,i) in inputs" :key="input.placeholder">
-            <input @keydown="checkValidate" type="text" v-model="input.name" :placeholder="input.placeholder">
-            <span class="buttons-input">
-              <span v-if="i == inputs.length -1  " @click="addPlayer();moreThanOne();checkValidate()"><v-icon class="v-icon" name="plus"></v-icon></span>
-              <span v-if="i == inputs.length -1 && i != 0 "
-                @click.prevent="removePlayer(input); moreThanOne();checkValidate()"><v-icon class="v-icon remove" name="minus"></v-icon></span>
-            </span>
+      <div class="main-container-home">
+        <div class="container-home">
+          <div class="container-inputs">
+            <h2>Entrez les joueurs</h2>
+            <form class="form-home" ref="test" @submit.prevent="savePlayers">
+              <div class="inputs-home">
+                <div v-for="(input,i) in inputs" :key="input.placeholder">
+                  <input @keydown="checkValidate" type="text" v-model="input.name" :placeholder="input.placeholder">
+                  <span class="buttons-input">
+                    <span v-if="i == inputs.length -1  " @click="addPlayer();moreThanOne();checkValidate()">
+                      <v-icon class="v-icon" name="plus"></v-icon>
+                    </span>
+                    <span v-if="i == inputs.length -1 && i != 0 "
+                      @click.prevent="removePlayer(input); moreThanOne();checkValidate()">
+                      <v-icon class="v-icon remove" name="minus"></v-icon>
+                    </span>
+                  </span>
 
-          </div>
+                </div>
+              </div>
+
+              <div class="buttons-toggle-home" v-if="!solo && !duo">
+                <button @click.prevent="toggleTeam" class="primaire" :disabled="!team">Par équipe</button>
+                <button @click.prevent="toggleTeam" class="primaire" :disabled="team">Bagarre</button>
+              </div>
+
+              <button :disabled="!inputsOk" class="large primaire" type="submit">Ok</button>
+            </form>
           </div>
 
-          <div class="buttons-toggle-home" v-if="!solo && !duo">
-            <button @click.prevent="toggleTeam" class="primaire" :disabled="!team">Par équipe</button>
-            <button @click.prevent="toggleTeam" class="primaire" :disabled="team">Bagarre</button>
-          </div>
-          
-          <button :disabled="!inputsOk" class="large primaire" type="submit">Ok</button>
-        </form>
-      </div>
-
-    </div>
-        <div class="dernieres-parties">
-                <div class="card">
+        </div>
+        <div v-if="showequipes || showbigFight" class="dernieres-parties">
+          <div v-if="showequipes"  class="card">
             <h3 class="stat-title">Derniere partie en équipe</h3>
             <br>
             <h4>Equipe 1</h4>
@@ -38,19 +42,20 @@
             <p class="stat-item" v-for="joueur in $store.state.equipes[1]" :key="joueur">{{joueur}}</p>
             <button @click="reprendreEquipe" class="large primaire">Reprendre</button>
           </div>
-          <div class="card">
-            <h3 class="stat-title">Dernier<span v-if="$store.state.bigFight.length > 1">e</span> <span v-if="$store.state.bigFight.length > 1">bagarre</span><span v-else>entrainement</span></h3>
+          <div v-if="showbigFight" class="card">
+            <h3 class="stat-title">Dernier<span v-if="$store.state.bigFight.length > 1">e</span> <span
+                v-if="$store.state.bigFight.length > 1">bagarre</span><span v-else>entrainement</span></h3>
             <br>
             <p class="stat-item" v-for="joueur in $store.state.bigFight" :key="joueur.placeholder">{{joueur.name}}</p>
             <button @click="reprendreBagarre" class="large primaire">Reprendre</button>
           </div>
+        </div>
+      </div>
     </div>
-    </div>
-    </div>
-    
 
 
-    
+
+
 
 
   </div>
@@ -59,6 +64,15 @@
 <script>
   export default {
     name: 'App',
+    created() {
+      console.log(this.$store.state.bigFight );
+      console.log(this.$store.state.equipes );
+
+      this.$store.state.bigFight.length == 0 ? this.showbigFight = false : this.showbigFight = true
+      this.$store.state.equipes.length == 0 ? this.showequipes = false : this.showequipes = true
+      
+
+    },
     data() {
       return {
         inputs: [{
@@ -69,7 +83,9 @@
         solo: true,
         duo: false,
         team: false,
-        inputsOk: false
+        inputsOk: false,
+        showbigFight : false,
+        showequipes : false
 
       }
     },
@@ -132,20 +148,20 @@
 
       },
       reprendreEquipe() {
-          this.$router.push({
-            name: "TeamFight",
-            params: {
-              from: 'Home'
-            }
-          })
+        this.$router.push({
+          name: "TeamFight",
+          params: {
+            from: 'Home'
+          }
+        })
       },
       reprendreBagarre() {
-          this.$router.push({
-            name: "Fight",
-            params: {
-              from: 'Home'
-            }
-          })
+        this.$router.push({
+          name: "Fight",
+          params: {
+            from: 'Home'
+          }
+        })
       },
       checkValidate() {
         this.inputsOk = true
@@ -197,7 +213,7 @@
     font-weight: 600;
     font-size: 1.5rem;
     margin-top: 10px;
-    
+
   }
 
   .buttons-input {
@@ -213,7 +229,7 @@
     cursor: pointer;
     transition: 0.2s;
   }
-  
+
   .v-icon:hover {
     transform: scale(0.95);
   }
@@ -235,7 +251,7 @@
     box-shadow: none;
   }
 
-    button:disabled:hover {
+  button:disabled:hover {
     transform: none;
   }
 
