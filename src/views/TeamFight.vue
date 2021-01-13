@@ -265,7 +265,6 @@
     }
 
     .stat-title {
-        border: top solid rgb(19, 19, 19);
         padding-top: 15px;
         color: rgba(0, 0, 151, 0.815);
     }
