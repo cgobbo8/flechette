@@ -2,7 +2,7 @@
     <div>
         <div class="super-container">
             <div class="card-container">
-                <card-player :ref="`card`" v-for="(joueur,i) in joueurs" :key="i"  :name="joueur.name"></card-player>
+                <card-player :ref="`card`" v-for="(joueur,i) in joueurs" :key="i" :name="joueur.name"></card-player>
 
             </div>
             <modal name="example">
@@ -54,7 +54,7 @@
             return {
                 joueurs: [],
                 gagnant: "",
-                cpt : 0
+                cpt: 0
             }
         },
         methods: {
@@ -78,9 +78,9 @@
             },
             next() {
                 this.$refs.card[this.cpt].active = false
-            this.cpt = (this.cpt + 1) % this.$refs.card.length
-            this.$refs.card[this.cpt].active = true
-            
+                this.cpt = (this.cpt + 1) % this.$refs.card.length
+                this.$refs.card[this.cpt].active = true
+
             }
         }
     }
